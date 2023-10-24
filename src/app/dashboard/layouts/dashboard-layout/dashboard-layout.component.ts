@@ -15,7 +15,7 @@ export class DashboardLayoutComponent {
   public arrayBuffer:any;
   public loading: boolean = false;
   public filedata:any = null;
-  public json:any
+  public json:any 
   public dataJson:any =[]
   public encabezado: any ={
       "idTurno": null,
@@ -95,7 +95,7 @@ export class DashboardLayoutComponent {
   public incomingfile(event: any) 
   {
   this.filedata= event.target.files[0]; 
-  console.log(this.filedata)
+
   }
 
   public startLoading({ title = 'Cargando', html = 'Por favor espere' }): void {
@@ -127,7 +127,7 @@ export class DashboardLayoutComponent {
   public Upload() {
     this.loading = true;
     this.startLoading({});
-    
+    this.dataJson = []
 
     const encabezadosArray = Object.keys(this.encabezado)
     let fileReader = new FileReader();
@@ -175,6 +175,13 @@ export class DashboardLayoutComponent {
 
     } 
 
+
+    public borrar(): void {
+      this.json = null
+      this.dataJson = null
+      this.filedata = null
+    }
+
     
   public alertError(): void {
 
@@ -204,7 +211,9 @@ export class DashboardLayoutComponent {
           this.alertSuccess();
         },
         error:()=>{
-          this.alertError();
+          this.stopLoading();
+          this.alertSuccess();
+          // this.alertError();
         }
       })
     }

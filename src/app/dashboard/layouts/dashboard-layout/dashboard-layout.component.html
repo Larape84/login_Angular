@@ -56,7 +56,12 @@
          </div>
      
         <input accept=".xls,.xlsx" #fileinput type="file" style="display: none" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx">
-        <button type="button" class="mt-4" mat-stroked-button color="accent" [disabled]="!filedata" (click)="Upload()" >Guardar</button>
+        <div class="flex flex-row gap-4 ">
+
+          <button type="button" class="mt-4" mat-stroked-button color="accent" [hidden]="!filedata"  (click)="borrar()" >Borrar archivo</button>
+
+          <button type="button" class="mt-4" mat-stroked-button color="accent" [disabled]="!filedata" (click)="Upload()" >Guardar archivo</button>
+        </div>
      
      
        </div>
