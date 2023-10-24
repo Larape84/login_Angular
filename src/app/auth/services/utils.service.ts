@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environments';
@@ -16,7 +16,12 @@ export class UtilsService {
 
   public guardarData(data: any): Observable<any[]> {
     const endpoint = 'reportes/saveAll'
-    return this._http.post<any[]>(`${url}/${endpoint}`, data)
+    const headers = new HttpHeaders({
+      // Authentication: ``,
+      Accept: 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
+  });
+    return this._http.post<any[]>(`${url}/${endpoint}`, data, {headers})
   }
 
 }
