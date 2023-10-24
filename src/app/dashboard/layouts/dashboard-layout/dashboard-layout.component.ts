@@ -151,10 +151,11 @@ export class DashboardLayoutComponent {
             const row:any = {}
             encabezadosArray.forEach((encabezado, index)=>{
               if(encabezado === 'fechaCreacion'){
-                console.log(element[nombresExcel[index]]);
-                row[encabezado] = moment(element[nombresExcel[index]],  'DD/MM/YYYY h:mm:ss a').format('YYYY-MM-DD h:mm')
+               
+                row[encabezado] = element[nombresExcel[index]]!=='' ? moment(element[nombresExcel[index]],  'DD/MM/YYYY h:mm:ss a').format('YYYY-MM-DD h:mm') : null
               }else{
-                row[encabezado] = element[nombresExcel[index]]
+
+                row[encabezado] = element[nombresExcel[index]]!=='' ? element[nombresExcel[index]] : null
 
               }
             })
