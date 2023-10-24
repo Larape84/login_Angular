@@ -16,7 +16,7 @@ export class UtilsService {
 
   public guardarData(data: any): Observable<any[]> {
     const endpoint = 'reportes/saveAll'
-    return this._http.post<any[]>(`${url}/${endpoint}`, {data})
+    return this._http.post<any[]>(`${url}/${endpoint}`, data)
   }
 
 }
