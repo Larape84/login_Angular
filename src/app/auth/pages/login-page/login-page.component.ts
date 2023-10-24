@@ -18,8 +18,8 @@ export class LoginPageComponent {
 
 
   public myForm: FormGroup = this.fb.group({
-    email:    ['fernando@google.com', [ Validators.required, Validators.email ]],
-    password: ['123456', [ Validators.required, Validators.minLength(6) ]],
+    email:    ['admin', [ Validators.required ]],
+    password: ['admin', [ Validators.required, Validators.minLength(4) ]],
   });
 
 
@@ -30,7 +30,7 @@ export class LoginPageComponent {
       .subscribe({
         next: () => this.router.navigateByUrl('/dashboard'),
         error: (message) => {
-          Swal.fire('Error', message, 'error' )
+          // Swal.fire('Error', message, 'error' )
         }
       })
 

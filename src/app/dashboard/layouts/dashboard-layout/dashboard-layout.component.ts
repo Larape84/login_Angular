@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2'
+import { UtilsService } from 'src/app/auth/services/utils.service';
 
 @Component({
   templateUrl: './dashboard-layout.component.html',
@@ -75,6 +76,8 @@ export class DashboardLayoutComponent {
     { data: [ 0, 0, 0, 0 ], label: 'Ventas'}
   ];
 
+  constructor (private _service : UtilsService){}
+
 
   // get user() {
   //   return this.authService.currentUser();
@@ -122,8 +125,8 @@ export class DashboardLayoutComponent {
 
   public Upload() {
     this.loading = true;
-
     this.startLoading({});
+    
 
     const encabezadosArray = Object.keys(this.encabezado)
     let fileReader = new FileReader();
@@ -154,17 +157,49 @@ export class DashboardLayoutComponent {
 
           });
 
+          
+          setTimeout(() => {
+            this.guardarData(this.dataJson);
 
-
-          console.log('datajson',this.dataJson);
-            setTimeout(() => {
-            this.stopLoading();
-            this.alertSuccess();
-            }, 2000);
+            }, 1000);
       }
       fileReader.readAsArrayBuffer(this.filedata);
 
     } 
+
+    
+  public alertError(): void {
+
+    // this.stopLoading();
+
+    Swal.fire({
+      allowOutsideClick: true,
+      backdrop: true,
+      title: 'Error!',
+      text: "Su solicitud no pudo ser procesada, por favor intente nuevamente",
+      icon: 'error',
+      customClass: {
+        confirmButton: 'rounded-full w-20 bg-gray-400 ring-0'
+      }
+    })
+  }
+
+
+    public guardarData(data: any): void {
+
+      
+
+      this._service.guardarData(data).subscribe({
+        next:(resp)=>{
+          console.log(resp);
+          this.stopLoading();
+          this.alertSuccess();
+        },
+        error:()=>{
+          this.alertError();
+        }
+      })
+    }
 
 
 }
