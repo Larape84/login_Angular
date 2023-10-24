@@ -3,6 +3,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2'
 import { UtilsService } from 'src/app/auth/services/utils.service';
+import * as moment from 'moment'
 
 @Component({
   templateUrl: './dashboard-layout.component.html',
@@ -149,7 +150,13 @@ export class DashboardLayoutComponent {
             const nombresExcel = Object.keys(element)
             const row:any = {}
             encabezadosArray.forEach((encabezado, index)=>{
-              row[encabezado] = element[nombresExcel[index]]
+              if(encabezado === 'fechaCreacion'){
+                console.log(element[nombresExcel[index]]);
+                row[encabezado] = moment(element[nombresExcel[index]],  'DD/MM/YYYY h:mm:ss a').format('YYYY-MM-DD h:mm')
+              }else{
+                row[encabezado] = element[nombresExcel[index]]
+
+              }
             })
 
             this.dataJson.push({...row})
