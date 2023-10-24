@@ -70,6 +70,12 @@ export class DashboardLayoutComponent {
   public ruta: string = 'archivo'
   public user = computed(() => this.authService.currentUser() );
 
+  public lineChartLabels: Array<any> = ['Enero', 'Febrero', 'Marzo', 'Abril' ];
+  public lineChartData: Array<any> = [
+    { data: [ 0, 0, 0, 0 ], label: 'Ventas'}
+  ];
+
+
   // get user() {
   //   return this.authService.currentUser();
   // }

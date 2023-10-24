@@ -7,6 +7,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatRippleModule} from '@angular/material/core';
+import { NgChartsModule } from 'ng2-charts';
 
 
 
@@ -20,7 +21,8 @@ import {MatRippleModule} from '@angular/material/core';
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatRippleModule
+    MatRippleModule,
+    NgChartsModule
   ]
 })
 export class DashboardModule { }

@@ -22,7 +22,7 @@
 
   <section class="flex flex-row w-full h-full">
 
-    <section class="w-80 flex flex-col h-full bg-purple-400 p-4 gap-4">
+    <section class="w-80  flex flex-col h-full bg-purple-400 p-4 gap-4" style="max-width: 320px; min-width: 320px; min-height: 100%; max-height: 100%;">
 
       <div (click)="changeRuta('archivo')" [ngClass]="ruta==='archivo'? 'bg-blue-500 shadow-md' : 'bg-transparent' " class="border border-gray-200 p-4 rounded-md">
         <span class="text-white">Subir archivos</span>
@@ -36,8 +36,14 @@
     </section>
 
 
-    <section class="flex flex-col p-8 w-full">
+    <section  *ngIf="ruta==='archivo'" class="flex flex-col p-8 w-full pl-2 pt-2">
   
+      <div class="flex flex-col gap-4 mb-4">
+        
+        <h1>Subir archivo de excel</h1>
+  
+              <hr>
+      </div>
   
       <div class=" rounded-md bg-gray-100 w-full h-[360px] flex items-center justify-center p-6 flex-col">
      
@@ -55,6 +61,32 @@
      
        </div>
   
+    </section>
+
+
+    <section class="flex flex-col p-8 w-full pl-2 pt-2" *ngIf="ruta==='grafica'">
+
+      <div class="flex flex-col gap-4 mb-4">
+        
+        <h1>Detalle de graficas</h1>
+  
+              <hr>
+      </div>
+
+            <div class="w-full border border-gray-100 mt-4" style="height: 60%;">
+              <div class="flex items-center justify-center mt-4">
+
+                  <div class="">
+                      <canvas baseChart width="400" height="400"
+                                  [datasets]="lineChartData"
+                                  [labels]="lineChartLabels"
+                                  [type]="'line'">
+                        </canvas>
+                  </div>
+
+              </div>
+            </div>
+
     </section>
 
   </section>
