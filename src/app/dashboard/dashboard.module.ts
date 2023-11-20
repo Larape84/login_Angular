@@ -8,6 +8,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatRippleModule} from '@angular/material/core';
 import { NgChartsModule } from 'ng2-charts';
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 
 
@@ -22,7 +24,9 @@ import { NgChartsModule } from 'ng2-charts';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatRippleModule,
-    NgChartsModule
+    NgChartsModule,
+    MatTableModule,
+    MatPaginatorModule
   ]
 })
 export class DashboardModule { }

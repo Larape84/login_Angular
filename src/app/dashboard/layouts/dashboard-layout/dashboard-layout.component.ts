@@ -1,37 +1,43 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, ViewChild, computed, inject, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2'
 import { UtilsService } from 'src/app/auth/services/utils.service';
 import * as moment from 'moment'
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+
+
 
 @Component({
   templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.css']
 })
-export class DashboardLayoutComponent {
+export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
+  public dataSource = new MatTableDataSource<any>([]);
 
+  @ViewChild(MatPaginator) public paginator!: MatPaginator;
   private authService = inject( AuthService );
   public arrayBuffer:any;
   public loading: boolean = false;
   public filedata:any = null;
-  public json:any 
+  public json:any
   public dataJson:any =[]
   public encabezado: any ={
-      "idTurno": null,
-      "idServicio": null,
-      "numTurno": null,
-      "region": null,
-      "fechaCreacion": null,
-      "oficina": null,
-      "sala": null,
-      "cliente": null,
-      "tipoCliente": null,
-      "proceso": null,
-      "subproceso": null,
-      "agrupamiento": null,
-      "tramite": null,
-      "cola": null,
+    "idTurno": null,
+    "idServicio": null,
+    "numTurno": null,
+    "region": null,
+    "fechaCreacion": null,
+    "oficina": null,
+    "sala": null,
+    "cliente": null,
+    "tipoCliente": null,
+    "proceso": null,
+    "subproceso": null,
+    "agrupamiento": null,
+    "tramite": null,
+    "cola": null,
       "anioMes": null,
       "horaSolicitud": null,
       "horaFinEspera": null,
@@ -69,15 +75,31 @@ export class DashboardLayoutComponent {
       "turClasificacionTramitante": null
     }
 
-  public ruta: string = 'archivo'
-  public user = computed(() => this.authService.currentUser() );
+    public displayedColumns: string[] = Object.keys(this.encabezado);
+    public ruta: string = 'archivo'
+    public user = computed(() => this.authService.currentUser() );
 
-  public lineChartLabels: Array<any> = ['Enero', 'Febrero', 'Marzo', 'Abril' ];
-  public lineChartData: Array<any> = [
-    { data: [ 0, 0, 0, 0 ], label: 'Ventas'}
-  ];
 
-  constructor (private _service : UtilsService){}
+
+
+    public lineChartLabels: Array<any> = ['Enero', 'Febrero', 'Marzo', 'Abril' ];
+    public lineChartData: Array<any> = [
+      { data: [ 0, 0, 0, 0 ], label: 'Ventas'}
+    ];
+
+
+
+    constructor (private _service : UtilsService){}
+
+
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.dataSource.paginator = this.paginator;
+
+
+
+
+  }
 
 
   // get user() {
@@ -92,9 +114,10 @@ export class DashboardLayoutComponent {
     this.ruta = ruta
   }
 
-  public incomingfile(event: any) 
+  public incomingfile(event: any)
   {
-  this.filedata= event.target.files[0]; 
+  this.filedata= event.target.files[0];
+  console.log('this.filedata',this.filedata)
 
   }
 
@@ -125,6 +148,19 @@ export class DashboardLayoutComponent {
   }
 
   public Upload() {
+
+    if(!this.filedata){
+      const param = {
+        icon: 'info',
+        title: 'Info!',
+        text:'Por favor seleccionar un archivo para guardar'
+      }
+      this.alertError(param);
+      return;
+    }
+
+
+
     this.loading = true;
     this.startLoading({});
     this.dataJson = []
@@ -151,7 +187,7 @@ export class DashboardLayoutComponent {
             const row:any = {}
             encabezadosArray.forEach((encabezado, index)=>{
               if(encabezado === 'fechaCreacion'){
-               
+
                 row[encabezado] = element[nombresExcel[index]]!=='' ? moment(element[nombresExcel[index]],  'DD/MM/YYYY h:mm:ss a').format('YYYY-MM-DD') : null
               }else{
 
@@ -165,44 +201,55 @@ export class DashboardLayoutComponent {
 
           });
 
-          
+
           setTimeout(() => {
-            this.guardarData(this.dataJson);
+            console.log('this.dataJson',this.dataJson);
+            this.stopLoading();
+            this.alertSuccess();
+            this.dataSource =  new MatTableDataSource<any>([...this.dataJson]);
+            this.dataSource.paginator = this.paginator;
+            // this.guardarData(this.dataJson);
 
             }, 1000);
       }
       fileReader.readAsArrayBuffer(this.filedata);
 
-    } 
+    }
 
 
     public borrar(): void {
       this.json = null
       this.dataJson = null
       this.filedata = null
+      this.dataSource =  new MatTableDataSource<any>([]);
+      this.dataSource.paginator = this.paginator;
     }
 
-    
-  public alertError(): void {
+
+  public alertError(param: any = {}): void {
 
     // this.stopLoading();
 
     Swal.fire({
       allowOutsideClick: true,
       backdrop: true,
-      title: 'Error!',
-      text: "Su solicitud no pudo ser procesada, por favor intente nuevamente",
-      icon: 'error',
+      title: param.title || 'Error!',
+      text: param.text || "Su solicitud no pudo ser procesada, por favor intente nuevamente",
+      icon: param.icon || 'error',
       customClass: {
         confirmButton: 'rounded-full w-20 bg-gray-400 ring-0'
       }
     })
   }
 
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+
 
     public guardarData(data: any): void {
 
-      
+
 
       this._service.guardarData(data).subscribe({
         next:(resp)=>{

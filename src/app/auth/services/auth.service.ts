@@ -27,7 +27,7 @@ export class AuthService {
 
   private setAuthentication(user: User, token:string): boolean {
 
-  
+
 
     this._currentUser.set( user );
     this._authStatus.set( AuthStatus.authenticated );
@@ -44,26 +44,26 @@ export class AuthService {
     const url  = `${ this.baseUrl }/auth/login`;
     const body = { email, password };
 
-    
+
 
     const userActual: User = {
       _id:      '0',
-      email:    'ljarape@misena.edu.co',
-      name:     'Leo',
+      email:    'admin@misena.edu.co',
+      name:     'admin',
       isActive: true,
       roles:    ['Admin']
     }
 
     const tokenActual = 'asdsa56d45asd456df4'
 
-    
+    this.setAuthentication( userActual, tokenActual )
 
+    return of(true)
     return this.http.post<LoginResponse>( url, body )
       .pipe(
         map( ({ user, token }) => this.setAuthentication( user, token )),
         catchError( err => throwError( () => {
           // err.error.message;
-          this.setAuthentication( userActual, tokenActual )
         } ))
       );
   }

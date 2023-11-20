@@ -22,17 +22,63 @@ export class LoginPageComponent {
     password: ['admin', [ Validators.required, Validators.minLength(4) ]],
   });
 
+  public alertError(param: any = {}): void {
+
+    // this.stopLoading();
+
+    Swal.fire({
+      allowOutsideClick: true,
+      backdrop: true,
+      title: param.title || 'Error!',
+      text: param.text || "Su solicitud no pudo ser procesada, por favor intente nuevamente",
+      icon: param.icon || 'error',
+      customClass: {
+        confirmButton: 'rounded-full w-20 bg-gray-400 ring-0'
+      }
+    })
+  }
+
+  public startLoading({ title = 'Cargando', html = 'Por favor espere' }): void {
+
+    Swal.fire({ title, html, allowOutsideClick: false, timer: 500000, didOpen: () => { Swal.showLoading() }, })
+
+  }
+
+  public stopLoading(): void {
+    Swal.close();
+  }
+
+
 
   login() {
+    this.startLoading({});
+
     const { email, password } = this.myForm.value;
 
-    this.authService.login(email, password)
-      .subscribe({
-        next: () => this.router.navigateByUrl('/dashboard'),
-        error: (message) => {
-          // Swal.fire('Error', message, 'error' )
+    setTimeout(() => {
+
+
+      if(email === 'admin' && password === 'admin'){
+
+        this.authService.login(email, password)
+          .subscribe({
+            next: () => {},
+            error: (message) => {}
+          })
+        this.stopLoading();
+        this.router.navigateByUrl('/dashboard')
+      }else{
+          const param = {
+            icon: 'error',
+            title: 'Error!',
+            text:'Usuario y/o contraseña incorrecto'
+          }
+          this.alertError(param);
+
         }
-      })
+    }, 1000);
+
+
 
   }
 
