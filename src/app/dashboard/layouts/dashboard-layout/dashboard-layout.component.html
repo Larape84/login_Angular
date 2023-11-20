@@ -30,8 +30,14 @@
         <span class="text-white">Subir archivos</span>
       </div>
 
-      <div (click)="changeRuta('grafica')" [ngClass]="ruta==='grafica'? 'bg-blue-500  shadow-md items-center flex flex-row gap-4 ' : 'bg-transparent items-center flex flex-row gap-4' " class="border border-gray-200 p-4 rounded-md cursor-pointer">
+      <div (click)="changeRuta('historico')" [ngClass]="ruta==='historico'? 'bg-blue-500  shadow-md items-center flex flex-row gap-4 ' : 'bg-transparent items-center flex flex-row gap-4' " class="border border-gray-200 p-4 rounded-md cursor-pointer">
         <mat-icon class="text-white w-10 h-10">description</mat-icon>
+
+        <span class="text-white">Histórico</span>
+      </div>
+
+      <div (click)="changeRuta('grafica')" [ngClass]="ruta==='grafica'? 'bg-blue-500  shadow-md items-center flex flex-row gap-4 ' : 'bg-transparent items-center flex flex-row gap-4' " class="border border-gray-200 p-4 rounded-md cursor-pointer">
+        <mat-icon class="text-white w-10 h-10">trending_up</mat-icon>
 
         <span class="text-white">Ver graficas</span>
       </div>
