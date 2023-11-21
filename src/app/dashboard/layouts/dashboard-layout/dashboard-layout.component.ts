@@ -6,6 +6,7 @@ import { UtilsService } from 'src/app/auth/services/utils.service';
 import * as moment from 'moment'
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource, } from '@angular/material/table';
+import { BaseChartDirective } from 'ng2-charts';
 
 
 
@@ -16,7 +17,7 @@ import {MatTableDataSource, } from '@angular/material/table';
 export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
   public dataSource = new MatTableDataSource<any>([]);
   @ViewChild('fileinput') public fileinput!: any;
-
+  @ViewChild(BaseChartDirective) public chart!: BaseChartDirective
   @ViewChild(MatPaginator) public paginator!: MatPaginator;
   private authService = inject( AuthService );
   public arrayBuffer:any;
@@ -231,18 +232,12 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
 
           });
 
-
-          setTimeout(() => {
-            console.log('this.dataJson',this.dataJson);
-            this.stopLoading();
-            this.alertSuccess();
             this.displayedColumns= Object.keys(this.encabezado);
-
             this.dataSource =  new MatTableDataSource<any>([...this.dataJson]);
             this.dataSource.paginator = this.paginator;
-            // this.guardarData(this.dataJson);
+            this.guardarData([...this.dataJson]);
 
-            }, 1000);
+           
       }
       fileReader.readAsArrayBuffer(this.filedata);
 
@@ -293,8 +288,7 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
         },
         error:()=>{
           this.stopLoading();
-          this.alertSuccess();
-          // this.alertError();
+          this.alertError();
         }
       })
     }
@@ -322,21 +316,37 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
         return
       }
 
-
+      // console.log(this.dates,'this.dates')
 
       const rangos = {
-        fechaInicial: moment(this.dates.init).format("yyyy-mm-dd") ,
-        fechaFinal: moment(this.dates.end).format("yyyy-mm-dd") ,
+        fechaInicial: this.dates.init ,
+        fechaFinal: this.dates.end ,
       }
 
       this._service.loadGraficaOne(rangos).subscribe({
-        next:(data)=>{
+        next:(data:any)=>{
 
-          data.forEach((item)=>{
-               this.lineChartLabels.push(item.tramite);
-               this.lineChartData[0].data.push(item.cantidad);
-          })
-        },
+          if(!data.length){
+            const param = {
+              icon: 'info',
+              title: 'Info!',
+              text:'No hay registros en el rango de fecha seleccionado'
+            }
+
+            this.alertError(param);
+            }
+
+            data.forEach((item: any)=>{
+                 this.lineChartLabels.push(item.tramite);
+                 this.lineChartData[0].data.push(item.cantidad);
+            })
+
+            this.chart.update();
+
+
+          },
+
+        
         error:()=>{}
       })
 

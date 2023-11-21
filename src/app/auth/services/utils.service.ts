@@ -13,30 +13,25 @@ export class UtilsService {
   constructor(private _http : HttpClient, ) { }
 
   public loadGraficaOne(rangoFechas: any): Observable<any[]>{
-    const endpoint = 'api/reportes/tramite'
+    const endpoint = 'reportes/tramite'
     return this._http.post<any[]>(`${url}/${endpoint}`, {...rangoFechas})
   }
 
   public loadGraficaTwo(rangoFechas: any): Observable<any[]>{
-    const endpoint = 'api/reportes/estado'
+    const endpoint = 'reportes/estado'
     return this._http.post<any[]>(`${url}/${endpoint}`, {...rangoFechas})
   }
 
 
   public loadGraficaTree(rangoFechas: any): Observable<any[]>{
-    const endpoint = 'api/reportes/tiempo-atencion'
+    const endpoint = 'reportes/tiempo-atencion'
     return this._http.post<any[]>(`${url}/${endpoint}`, {...rangoFechas})
   }
 
 
   public guardarData(data: any): Observable<any[]> {
     const endpoint = 'reportes/saveAll'
-    const headers = new HttpHeaders({
-      // Authentication: ``,
-      Accept: 'application/json',
-      'Content-Type': 'application/json; charset=utf-8',
-  });
-    return this._http.post<any[]>(`${url}/${endpoint}`, data, {headers})
+    return this._http.post<any[]>(`${url}/${endpoint}`, [...data])
   }
 
 }
