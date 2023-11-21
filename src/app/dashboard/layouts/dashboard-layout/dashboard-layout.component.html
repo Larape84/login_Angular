@@ -228,7 +228,11 @@
           </div>
         </div>
 
-        <button (click)="searchData()" type="button" class="border border-gray-600 max-h-8 h-8 p2 w-36 mt-7 bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center"> <mat-icon class="text-gray-300 w-6 h-6 mr-2">search</mat-icon> Consultar</button>
+        <button (click)="searchData()" type="button" class="border border-gray-600 max-h-9 h-9 p2 w-36 mt-7 bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center"> <mat-icon class="text-gray-300 w-6 h-6 mr-2">search</mat-icon> Consultar</button>
+
+        <button *ngIf="!!downloadExcelFile.length" (click)="downloadExcel()" type="button" class="border border-gray-600 max-h-9 h-9 p2 w-52 mt-7 bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center"> <mat-icon class="text-gray-300 w-6 h-6 mr-2">cloud_download</mat-icon> Descargar en Excel</button>
+
+
       </div>
 
 

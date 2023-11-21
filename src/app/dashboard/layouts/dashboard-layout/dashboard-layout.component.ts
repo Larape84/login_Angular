@@ -7,6 +7,7 @@ import * as moment from 'moment'
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource, } from '@angular/material/table';
 import { BaseChartDirective } from 'ng2-charts';
+import * as FileSaver from 'file-saver';
 
 
 
@@ -92,7 +93,7 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
     public ruta: string = 'archivo'
     public user = computed(() => this.authService.currentUser() );
     public filedataCopy : any = null;
-
+    public downloadExcelFile : any[] = [];
 
 
     public lineChartLabels: Array<any> = [];
@@ -276,8 +277,37 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
     }
 
 
+    public downloadExcel(): void {
+
+      this.startLoading({});
+
+      setTimeout(() => {
+        this.exportAsExcelFile(this.downloadExcelFile,'Resumen consulta informe');
+        this.stopLoading();
+      }, 500);
+
+    }
+
+    public exportAsExcelFile(json: any[], excelFileName: string): void {
+      const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
+      const myworkbook: XLSX.WorkBook = { Sheets: { 'data': myworksheet }, SheetNames: ['data'] };
+      const excelBuffer: any = XLSX.write(myworkbook, { bookType: 'xlsx', type: 'array' });
+      this.saveAsExcelFile(excelBuffer, excelFileName);
+  }
+
+    public saveAsExcelFile(buffer: any, fileName: string): void {
+      const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+      const EXCEL_EXTENSION = '.xlsx';
+      const data: Blob = new Blob([buffer], {
+        type: EXCEL_TYPE
+      });
+      FileSaver.saveAs(data, fileName + ''+ EXCEL_EXTENSION);
+  }
+
+
     public borrar(): void {
       this.json = null
+      this.downloadExcelFile = []
       this.dataJson = null
       this.filedata = null
       this.dataSource =  new MatTableDataSource<any>([]);
@@ -502,6 +532,7 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
           if(!!resp.length){
             this.stopLoading();
             this.displayedColumns= Object.keys(this.encabezado);
+            this.downloadExcelFile = resp
             this.dataSource =  new MatTableDataSource<any>([...resp]);
             this.dataSource.paginator = this.paginator;
           }else{
