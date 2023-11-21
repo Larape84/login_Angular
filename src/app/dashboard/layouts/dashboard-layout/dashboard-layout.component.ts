@@ -80,6 +80,7 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
       init:null,
       end:null
     }
+    public reloadGraficos: boolean = false;
     public displayedColumns: string[] = ['idTurno',	'idServicio',	'numTurno',	'region',	'fechaCreacion',	'oficina',	'sala',	'cliente',	'tipoCliente',	'proceso',	'subproceso',	'agrupamiento',	'tramite',	'cola',	'anioMes',	'horaSolicitud']
     public ruta: string = 'archivo'
     public user = computed(() => this.authService.currentUser() );
@@ -93,16 +94,16 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
 
 
     public lineChartData: Array<any> = [
-      { data: [ 0, 0, 0, 0 ], label: 'Reporte de tramites'},
+      { data: [  ], label: 'Reporte de tramites'},
     ];
 
     public lineChartDataTwo: Array<any> = [
-      { data: [ 0, 0, 0, 0 ], label: 'Reporte de estados'},
+      { data: [  ], label: 'Reporte de estados'},
     ];
 
 
     public lineChartDatatree: Array<any> = [
-      { data: [ 0, 0, 0, 0 ], label: 'Reporte tiempo de atencion'},
+      { data: [  ], label: 'Reporte tiempo de atencion'},
     ];
 
 
@@ -130,7 +131,31 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
   }
 
   public changeRuta(ruta: string): void {
-    this.ruta = ruta
+    this.ruta = ruta;
+
+    this.reloadGraficos = false;
+
+   this.lineChartLabels = [];
+    this.lineChartLabelTwo = [];
+    this.lineChartLabelsTree = [];
+
+
+    this.lineChartData = [
+      { data: [  ], label: 'Reporte de tramites'},
+    ];
+
+    this.lineChartDataTwo= [
+      { data: [ ], label: 'Reporte de estados'},
+    ];
+
+
+    this.lineChartDatatree = [
+      { data: [  ], label: 'Reporte tiempo de atencion'},
+    ];
+
+    this.borrar();
+
+
   }
 
   public incomingfile(event: any)
@@ -237,7 +262,7 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
             this.dataSource.paginator = this.paginator;
             this.guardarData([...this.dataJson]);
 
-           
+
       }
       fileReader.readAsArrayBuffer(this.filedata);
 
@@ -282,9 +307,16 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
 
       this._service.guardarData(data).subscribe({
         next:(resp)=>{
-          console.log(resp);
+
           this.stopLoading();
           this.alertSuccess();
+
+          this.json = null
+          this.dataJson = null
+          this.filedata = null
+          this.fileinput.nativeElement.value = '';
+
+
         },
         error:()=>{
           this.stopLoading();
@@ -294,8 +326,27 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
     }
 
     public loadGraficos(): void {
-      this.lineChartLabels = []
-      this.lineChartData[0].data = []
+
+      this.reloadGraficos = false
+      this.startLoading({});
+
+      this.lineChartLabels = [];
+      this.lineChartLabelTwo = [];
+      this.lineChartLabelsTree = [];
+
+
+      this.lineChartData = [
+        { data: [ ], label: 'Reporte de tramites'},
+      ];
+
+      this.lineChartDataTwo= [
+        { data: [  ], label: 'Reporte de estados'},
+      ];
+
+
+      this.lineChartDatatree = [
+        { data: [  ], label: 'Reporte tiempo de atencion'},
+      ];
 
       if( !this.dates.init || !this.dates.end ){
         const param= {
@@ -342,40 +393,54 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
             })
 
             this.chart.update();
-
+            this.chart?.render();
 
           },
 
-        
+
         error:()=>{}
       })
 
-     this._service.loadGraficaOne(rangos).subscribe({
+     this._service.loadGraficaTwo(rangos).subscribe({
         next:(data)=>{
 
           data.forEach((item)=>{
-               this.lineChartLabels.push(item.tramite);
-               this.lineChartData[0].data.push(item.cantidad);
+               this.lineChartLabelTwo.push(item.estado);
+               this.lineChartDataTwo[0].data.push(item.cantidad);
           })
+
+          this.chart.update();
+          this.chart?.render();
+
         },
         error:()=>{}
       })
 
-       this._service.loadGraficaOne(rangos).subscribe({
+       this._service.loadGraficaTree(rangos).subscribe({
         next:(data)=>{
 
+
+
           data.forEach((item)=>{
-               this.lineChartLabels.push(item.tramite);
-               this.lineChartData[0].data.push(item.cantidad);
+
+               this.lineChartLabelsTree.push(item.tramite);
+               this.lineChartDatatree[0].data.push(item.tiempoGestion);
           })
+
+          this.chart.update();
+          this.chart?.render();
+
         },
         error:()=>{}
       })
 
-
-
+      setTimeout(() => {
+        this.stopLoading();
+        this.reloadGraficos = true;}, 1000);
 
     }
+
+
 
 
 }
