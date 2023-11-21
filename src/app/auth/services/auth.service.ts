@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environments';
 import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
 
 import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class AuthService {
 
   private readonly baseUrl: string = environment.baseUrl;
   private http = inject( HttpClient );
+  private _router = inject( Router);
 
   private _currentUser = signal<User|null>(null);
   private _authStatus = signal<AuthStatus>( AuthStatus.checking );
@@ -22,6 +24,7 @@ export class AuthService {
 
 
   constructor() {
+
     this.checkAuthStatus().subscribe();
   }
 
@@ -98,6 +101,7 @@ export class AuthService {
     localStorage.removeItem('token');
     this._currentUser.set(null);
     this._authStatus.set( AuthStatus.notAuthenticated );
+    this._router.navigate(['auth/login'])
 
   }
 

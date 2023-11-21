@@ -34,4 +34,9 @@ export class UtilsService {
     return this._http.post<any[]>(`${url}/${endpoint}`, [...data])
   }
 
+  public searchData(rangoFechas: any): Observable<any[]>{
+    const endpoint = 'reportes/resumen'
+    return this._http.post<any[]>(`${url}/${endpoint}`, {...rangoFechas})
+  }
+
 }

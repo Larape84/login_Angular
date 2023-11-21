@@ -80,6 +80,13 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
       init:null,
       end:null
     }
+
+
+    public datesSearch:any = {
+      init:null,
+      end:null
+    }
+
     public reloadGraficos: boolean = false;
     public displayedColumns: string[] = ['idTurno',	'idServicio',	'numTurno',	'region',	'fechaCreacion',	'oficina',	'sala',	'cliente',	'tipoCliente',	'proceso',	'subproceso',	'agrupamiento',	'tramite',	'cola',	'anioMes',	'horaSolicitud']
     public ruta: string = 'archivo'
@@ -276,8 +283,20 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
       this.dataSource =  new MatTableDataSource<any>([]);
       this.dataSource.paginator = this.paginator;
       this.displayedColumns = ['idTurno',	'idServicio',	'numTurno',	'region',	'fechaCreacion',	'oficina',	'sala',	'cliente',	'tipoCliente',	'proceso',	'subproceso',	'agrupamiento',	'tramite',	'cola',	'anioMes',	'horaSolicitud']
-      this.fileinput.nativeElement.value = '';
+
+      const inputFile = this.fileinput?.nativeElement?.value || null
+      if(!!inputFile){
+        this.fileinput.nativeElement.value = '';
+      }
     }
+
+
+    public filtrarData(value : string): void {
+      value = value?.trim()?.toUpperCase();
+      this.dataSource.filter = value;
+    }
+
+
 
 
   public alertError(param: any = {}): void {
@@ -414,7 +433,9 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
         next:(data)=>{
           data.forEach((item)=>{
 
-               this.lineChartLabelsTree.push(item.tramite);
+              //  this.lineChartLabelsTree.push(item.tramite);
+               this.lineChartLabelsTree.push("");
+
                this.lineChartDatatree[0].data.push(item.tiempoGestion);
           })
 
@@ -439,6 +460,69 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
           this.alertError(param);
         }
       }, 1000);
+
+    }
+
+
+
+    public searchData(): void {
+      console.log('searcjdata')
+
+      this.startLoading({});
+
+      this.borrar();
+
+      if( !this.datesSearch.init || !this.datesSearch.end ){
+        const param= {
+          title: 'Info!',
+          text:  "Por favor seleccione la fecha de inicio y fecha final para realizar la busqueda",
+          icon: 'info',
+        }
+        this.alertError(param);
+        return
+      }
+
+      if( this.datesSearch.init > this.datesSearch.end ){
+        const param= {
+          title: 'Info!',
+          text:  "Por favor la fecha de inicio debe ser inferior a la  fecha final para realizar la busqueda",
+          icon: 'info',
+        }
+        this.alertError(param);
+        return
+      }
+
+      const rangos = {
+        fechaInicial: this.datesSearch.init ,
+        fechaFinal: this.datesSearch.end ,
+      }
+
+      this._service.searchData(rangos).subscribe({
+        next:(resp)=>{
+          if(!!resp.length){
+            this.stopLoading();
+            this.displayedColumns= Object.keys(this.encabezado);
+            this.dataSource =  new MatTableDataSource<any>([...resp]);
+            this.dataSource.paginator = this.paginator;
+          }else{
+            const param= {
+              title: 'Info!',
+              text:  "Lo sentimos, no se encontraron registros en el rango de fechas seleccionada",
+              icon: 'info',
+            }
+            this.alertError(param);
+          }
+        },
+        error:()=>{
+          this.alertError();
+        }
+      })
+
+
+
+
+
+
 
     }
 
