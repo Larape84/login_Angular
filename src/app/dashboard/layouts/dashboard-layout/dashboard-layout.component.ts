@@ -377,15 +377,9 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
       this._service.loadGraficaOne(rangos).subscribe({
         next:(data:any)=>{
 
-          if(!data.length){
-            const param = {
-              icon: 'info',
-              title: 'Info!',
-              text:'No hay registros en el rango de fecha seleccionado'
-            }
 
-            this.alertError(param);
-            }
+
+
 
             data.forEach((item: any)=>{
                  this.lineChartLabels.push(item.tramite);
@@ -418,9 +412,6 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
 
        this._service.loadGraficaTree(rangos).subscribe({
         next:(data)=>{
-
-
-
           data.forEach((item)=>{
 
                this.lineChartLabelsTree.push(item.tramite);
@@ -436,7 +427,18 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
 
       setTimeout(() => {
         this.stopLoading();
-        this.reloadGraficos = true;}, 1000);
+        if( this.lineChartLabelsTree.length>0){
+          this.reloadGraficos = true;
+        }else{
+          this.reloadGraficos = false;
+            const param = {
+              icon: 'info',
+              title: 'Info!',
+              text:'No hay registros en el rango de fecha seleccionado'
+            }
+          this.alertError(param);
+        }
+      }, 1000);
 
     }
 
