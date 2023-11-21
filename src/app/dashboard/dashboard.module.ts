@@ -1,5 +1,6 @@
+import { ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
@@ -10,8 +11,11 @@ import {MatRippleModule} from '@angular/material/core';
 import { NgChartsModule } from 'ng2-charts';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
-
-
+import {MatInputModule} from '@angular/material/input';
+import {MatDatepickerModule, } from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -26,7 +30,14 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     MatRippleModule,
     NgChartsModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    FormsModule
+
+
   ]
 })
 export class DashboardModule { }

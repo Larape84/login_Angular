@@ -4,8 +4,8 @@ import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2'
 import { UtilsService } from 'src/app/auth/services/utils.service';
 import * as moment from 'moment'
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatTableDataSource, } from '@angular/material/table';
 
 
 
@@ -15,6 +15,7 @@ import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 })
 export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
   public dataSource = new MatTableDataSource<any>([]);
+  @ViewChild('fileinput') public fileinput!: any;
 
   @ViewChild(MatPaginator) public paginator!: MatPaginator;
   private authService = inject( AuthService );
@@ -74,18 +75,35 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
       "turTipoDeIdentificacionTramitante": null,
       "turClasificacionTramitante": null
     }
-
-    public displayedColumns: string[] = Object.keys(this.encabezado);
+    public dates:any = {
+      init:null,
+      end:null
+    }
+    public displayedColumns: string[] = ['idTurno',	'idServicio',	'numTurno',	'region',	'fechaCreacion',	'oficina',	'sala',	'cliente',	'tipoCliente',	'proceso',	'subproceso',	'agrupamiento',	'tramite',	'cola',	'anioMes',	'horaSolicitud']
     public ruta: string = 'archivo'
     public user = computed(() => this.authService.currentUser() );
+    public filedataCopy : any = null;
 
 
 
+    public lineChartLabels: Array<any> = [];
+    public lineChartLabelTwo: Array<any> = [];
+    public lineChartLabelsTree: Array<any> = [];
 
-    public lineChartLabels: Array<any> = ['Enero', 'Febrero', 'Marzo', 'Abril' ];
+
     public lineChartData: Array<any> = [
-      { data: [ 0, 0, 0, 0 ], label: 'Ventas'}
+      { data: [ 0, 0, 0, 0 ], label: 'Reporte de tramites'},
     ];
+
+    public lineChartDataTwo: Array<any> = [
+      { data: [ 0, 0, 0, 0 ], label: 'Reporte de estados'},
+    ];
+
+
+    public lineChartDatatree: Array<any> = [
+      { data: [ 0, 0, 0, 0 ], label: 'Reporte tiempo de atencion'},
+    ];
+
 
 
 
@@ -116,9 +134,10 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
 
   public incomingfile(event: any)
   {
-  this.filedata= event.target.files[0];
-  console.log('this.filedata',this.filedata)
 
+  this.filedata= event.target.files[0];
+  console.log('this.filedata',this.filedata, event)
+  this.filedataCopy = event
   }
 
   public startLoading({ title = 'Cargando', html = 'Por favor espere' }): void {
@@ -145,6 +164,17 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
         confirmButton: 'rounded-full w-20 bg-blue-400 ring-0'
       }
     })
+  }
+
+  public loadArchivo(): void {
+
+
+    const content2:HTMLElement= document.getElementById('fileinput') as HTMLElement;
+    content2.click();
+
+
+
+
   }
 
   public Upload() {
@@ -206,6 +236,8 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
             console.log('this.dataJson',this.dataJson);
             this.stopLoading();
             this.alertSuccess();
+            this.displayedColumns= Object.keys(this.encabezado);
+
             this.dataSource =  new MatTableDataSource<any>([...this.dataJson]);
             this.dataSource.paginator = this.paginator;
             // this.guardarData(this.dataJson);
@@ -223,6 +255,8 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
       this.filedata = null
       this.dataSource =  new MatTableDataSource<any>([]);
       this.dataSource.paginator = this.paginator;
+      this.displayedColumns = ['idTurno',	'idServicio',	'numTurno',	'region',	'fechaCreacion',	'oficina',	'sala',	'cliente',	'tipoCliente',	'proceso',	'subproceso',	'agrupamiento',	'tramite',	'cola',	'anioMes',	'horaSolicitud']
+      this.fileinput.nativeElement.value = '';
     }
 
 
@@ -263,6 +297,74 @@ export class DashboardLayoutComponent implements AfterViewInit, OnChanges {
           // this.alertError();
         }
       })
+    }
+
+    public loadGraficos(): void {
+      this.lineChartLabels = []
+      this.lineChartData[0].data = []
+
+      if( !this.dates.init || !this.dates.end ){
+        const param= {
+          title: 'Info!',
+          text:  "Por favor seleccione la fecha de inicio y fecha final para realizar la busqueda",
+          icon: 'info',
+        }
+        this.alertError(param);
+        return
+      }
+      if( this.dates.init > this.dates.end ){
+        const param= {
+          title: 'Info!',
+          text:  "Por favor la fecha de inicio debe ser inferior a la  fecha final para realizar la busqueda",
+          icon: 'info',
+        }
+        this.alertError(param);
+        return
+      }
+
+
+
+      const rangos = {
+        fechaInicial: moment(this.dates.init).format("yyyy-mm-dd") ,
+        fechaFinal: moment(this.dates.end).format("yyyy-mm-dd") ,
+      }
+
+      this._service.loadGraficaOne(rangos).subscribe({
+        next:(data)=>{
+
+          data.forEach((item)=>{
+               this.lineChartLabels.push(item.tramite);
+               this.lineChartData[0].data.push(item.cantidad);
+          })
+        },
+        error:()=>{}
+      })
+
+     this._service.loadGraficaOne(rangos).subscribe({
+        next:(data)=>{
+
+          data.forEach((item)=>{
+               this.lineChartLabels.push(item.tramite);
+               this.lineChartData[0].data.push(item.cantidad);
+          })
+        },
+        error:()=>{}
+      })
+
+       this._service.loadGraficaOne(rangos).subscribe({
+        next:(data)=>{
+
+          data.forEach((item)=>{
+               this.lineChartLabels.push(item.tramite);
+               this.lineChartData[0].data.push(item.cantidad);
+          })
+        },
+        error:()=>{}
+      })
+
+
+
+
     }
 
 
